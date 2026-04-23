@@ -1,0 +1,23 @@
+{
+  "name": "Just Translate",
+  "short_name": "JustTranslate",
+  "description": "Global AI Voice Translation Bridge for Odisha",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F9FAFB",
+  "theme_color": "#f97316",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3898/3898082.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3898/3898082.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

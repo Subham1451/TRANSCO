@@ -1,0 +1,8 @@
+{
+  "name": "TRANSCO",
+  "description": "An AI-powered voice translation bridge for laborers and staff in Odisha to communicate across Odia, Hindi, and English.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": []
+}
