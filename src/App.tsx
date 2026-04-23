@@ -82,6 +82,58 @@ const THEMES: AppTheme[] = [
     textColor: 'text-slate-900',
     textSecondary: 'text-slate-400',
     glows: ['blue-200/40', 'slate-300/40', 'indigo-100/40']
+  },
+  {
+    id: 'sunset',
+    name: 'Solar Flare',
+    bgColor: '#1a0d00',
+    accentColor: '#f59e0b',
+    secondaryAccent: '#ef4444',
+    glassBg: 'bg-orange-500/[0.05]',
+    navBg: 'bg-orange-950/40',
+    projectorGradient: 'from-amber-600 via-orange-700 to-red-900',
+    textColor: 'text-orange-50',
+    textSecondary: 'text-orange-400/60',
+    glows: ['amber-500/20', 'orange-600/20', 'red-500/10']
+  },
+  {
+    id: 'forest',
+    name: 'Deep Jungle',
+    bgColor: '#050a05',
+    accentColor: '#4ade80',
+    secondaryAccent: '#15803d',
+    glassBg: 'bg-green-500/[0.05]',
+    navBg: 'bg-green-950/40',
+    projectorGradient: 'from-green-600 via-emerald-800 to-teal-950',
+    textColor: 'text-green-50',
+    textSecondary: 'text-green-400/60',
+    glows: ['green-500/15', 'emerald-600/15', 'lime-500/10']
+  },
+  {
+    id: 'ocean',
+    name: 'Deep Trench',
+    bgColor: '#010409',
+    accentColor: '#38bdf8',
+    secondaryAccent: '#1d4ed8',
+    glassBg: 'bg-blue-500/[0.05]',
+    navBg: 'bg-blue-950/40',
+    projectorGradient: 'from-blue-600 via-blue-800 to-indigo-950',
+    textColor: 'text-blue-50',
+    textSecondary: 'text-blue-400/60',
+    glows: ['blue-500/20', 'indigo-600/20', 'sky-500/10']
+  },
+  {
+    id: 'blood',
+    name: 'Crimson Tech',
+    bgColor: '#0a0101',
+    accentColor: '#f43f5e',
+    secondaryAccent: '#881337',
+    glassBg: 'bg-red-500/[0.05]',
+    navBg: 'bg-red-950/40',
+    projectorGradient: 'from-rose-600 via-red-800 to-black',
+    textColor: 'text-rose-50',
+    textSecondary: 'text-rose-400/60',
+    glows: ['rose-600/20', 'red-700/20', 'black/40']
   }
 ];
 
@@ -203,9 +255,15 @@ export default function App() {
     if (!inputText.trim()) return;
     setProcessing(true);
     setResult(null);
+    setError(null);
     try {
       const targetOption = LANGUAGES.find(l => l.value === targetLang)!;
       const translationTextResponse = await translateText(inputText, targetOption.label);
+      
+      if (!translationTextResponse) {
+        throw new Error("Translation failed. Please try again.");
+      }
+
       const translationResult: TranslationResult = {
         transcription: inputText,
         translation: translationTextResponse,
@@ -215,7 +273,7 @@ export default function App() {
       setHistory(prev => [{ ...translationResult, timestamp: Date.now(), targetLang: targetOption.label }, ...prev]);
       setInputText(''); 
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "An unexpected error occurred.");
     } finally {
       setProcessing(false);
     }
@@ -320,19 +378,19 @@ export default function App() {
       <MultilingualBackground theme={theme} />
       
       {/* Dynamic Navigation Bar */}
-      <nav className={`${theme.navBg} border-b border-white/5 px-8 py-5 flex justify-between items-center sticky top-0 z-50 backdrop-blur-2xl transition-colors duration-1000`}>
+      <nav className={`${theme.navBg} border-b border-white/5 px-4 sm:px-8 py-4 sm:py-5 flex justify-between items-center sticky top-0 z-50 backdrop-blur-2xl transition-colors duration-1000`}>
         <div className="flex items-center gap-4">
-          <div className="p-2.5 rounded-2xl text-white shadow-2xl rotate-3" style={{ background: `linear-gradient(to bottom right, ${theme.accentColor}, ${theme.secondaryAccent})` }}>
+          <div className="p-2 sm:p-3 rounded-2xl text-white shadow-2xl rotate-3" style={{ background: `linear-gradient(to bottom right, ${theme.accentColor}, ${theme.secondaryAccent})` }}>
             <Languages size={20} strokeWidth={2.5} />
           </div>
-          <span className={`text-2xl font-black tracking-[-0.07em] uppercase italic ${theme.textColor}`}>
+          <span className={`text-xl sm:text-2xl font-black tracking-[-0.07em] uppercase italic ${theme.textColor}`}>
             JUST TRANSLATE
           </span>
         </div>
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-2 sm:gap-4 items-center">
           <button 
             onClick={() => setShowThemeHub(true)}
-            className={`p-2.5 rounded-full transition-all border border-transparent hover:border-white/10 ${theme.id === 'ghost' ? 'text-slate-400 hover:bg-slate-200' : 'text-white/40 hover:text-white hover:bg-white/10'}`}>
+            className={`p-2 sm:p-3 rounded-full transition-all border border-transparent hover:border-white/10 ${theme.id === 'ghost' ? 'text-slate-400 hover:bg-slate-200' : 'text-white/40 hover:text-white hover:bg-white/10'}`}>
             <Settings size={20} strokeWidth={2.5} />
           </button>
         </div>
@@ -366,10 +424,10 @@ export default function App() {
                 whileTap={{ scale: 0.9 }}
                 disabled={sourceLang === 'auto'}
                 onClick={swapLanguages}
-                className={`p-4 rounded-full transition-all border ${sourceLang === 'auto' ? 'text-white/5 border-transparent' : 'border-white/10 hover:bg-white/5 active:scale-90 shadow-lg'}`}
+                className={`p-3 rounded-full transition-all border ${sourceLang === 'auto' ? 'text-white/5 border-transparent' : 'border-white/10 hover:bg-white/5 active:scale-90 shadow-lg'}`}
                 style={{ color: theme.accentColor, boxShadow: `0 10px 15px ${theme.accentColor}10` }}
               >
-                <Repeat size={20} strokeWidth={2.5} className="rotate-90 sm:rotate-0" />
+                <Repeat size={16} strokeWidth={2.5} className="rotate-90 sm:rotate-0" />
               </motion.button>
 
               <div className="flex-1 w-full relative group">
@@ -390,12 +448,30 @@ export default function App() {
               
               {/* Input Control Hub */}
               <div className={`${theme.glassBg} backdrop-blur-[60px] p-12 rounded-[4rem] shadow-2xl border border-white/10 min-h-[400px] flex flex-col items-center justify-center relative overflow-hidden transition-all duration-1000 group`}>
-                <div className="absolute top-10 left-12 flex items-center gap-4">
+                <div className="absolute top-6 sm:top-10 left-8 sm:left-12 flex items-center gap-4">
                   <div className="w-2.5 h-2.5 rounded-full shadow-2xl animate-pulse" style={{ backgroundColor: theme.accentColor, boxShadow: `0 0 15px ${theme.accentColor}` }} />
-                  <span className={`text-[12px] font-black uppercase tracking-[0.4em] leading-none ${theme.textSecondary}`}>Sensor Interface</span>
+                  <span className={`text-[10px] sm:text-[12px] font-black uppercase tracking-[0.2em] sm:tracking-[0.4em] leading-none ${theme.textSecondary}`}>Sensor Interface</span>
                 </div>
 
                 <AnimatePresence mode="wait">
+                  {error && (
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm p-6 bg-red-500/10 border border-red-500/20 rounded-3xl backdrop-blur-xl flex flex-col items-center gap-4 text-center z-20"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center text-white font-black text-xl">!</div>
+                      <p className="text-red-400 text-sm font-bold uppercase tracking-widest leading-relaxed">{error}</p>
+                      <button 
+                        onClick={() => setError(null)}
+                        className="px-6 py-2 bg-red-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition-all"
+                      >
+                        Dismiss
+                      </button>
+                    </motion.div>
+                  )}
+
                   {processing ? (
                     <motion.div 
                       key="processing"
@@ -421,7 +497,7 @@ export default function App() {
                         </p>
                         <div className="flex flex-wrap justify-center gap-4 items-center pt-4">
                           <div className={`inline-flex items-center gap-3 px-6 py-2 bg-white/5 border border-white/10 rounded-full text-[11px] font-black uppercase tracking-[0.2em]`} style={{ color: theme.accentColor }}>
-                            <Globe size={13} strokeWidth={2.5} /> {result.identifiedLanguage}
+                            <Globe size={16} strokeWidth={2.5} /> {result.identifiedLanguage}
                           </div>
                           <motion.button 
                             whileHover={{ scale: 1.05 }}
@@ -430,7 +506,7 @@ export default function App() {
                             className="inline-flex items-center gap-3 px-6 py-2 rounded-full text-[11px] font-black text-white uppercase tracking-[0.2em] transition-all shadow-2xl"
                             style={{ backgroundColor: theme.accentColor }}
                           >
-                            <Repeat size={13} strokeWidth={2.5} /> New Sentence
+                            <Repeat size={16} strokeWidth={2.5} /> New Sentence
                           </motion.button>
                         </div>
                       </div>
@@ -441,30 +517,30 @@ export default function App() {
                       initial={{ opacity: 0, y: 40 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -40 }}
-                      className="flex flex-col items-center gap-16 w-full max-w-xl"
+                      className="flex flex-col items-center gap-8 sm:gap-16 w-full max-w-xl"
                     >
                       <div className="flex flex-col items-center gap-6">
                         <motion.button 
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.9 }}
                           onClick={isRecording ? stopRecording : startRecording}
-                          className={`w-24 h-24 rounded-full flex items-center justify-center text-white transition-all duration-700 ring-8 shadow-2xl`}
+                          className={`w-16 h-16 sm:w-24 sm:h-24 rounded-full flex items-center justify-center text-white transition-all duration-700 ring-4 sm:ring-8 shadow-2xl`}
                           style={{ 
                             backgroundColor: isRecording ? '#dc2626' : theme.accentColor,
                             ringColor: isRecording ? '#dc262620' : `${theme.accentColor}20`
                           }}
                         >
-                          {isRecording ? <Square size={28} fill="white" strokeWidth={0} /> : <Mic size={36} strokeWidth={2.5} />}
+                          {isRecording ? <Square size={24} fill="white" strokeWidth={0} /> : <Mic size={32} strokeWidth={2.5} />}
                         </motion.button>
-                        <p className={`text-[11px] font-black uppercase tracking-[0.4em] text-center ${theme.textSecondary}`}>
+                        <p className={`text-[9px] sm:text-[11px] font-black uppercase tracking-[0.2em] sm:tracking-[0.4em] text-center ${theme.textSecondary}`}>
                           {isRecording ? 'Capturing Frequency...' : 'Initiate Voice capture'}
                         </p>
                       </div>
 
                       {!isRecording && (
-                        <div className="w-full flex flex-col gap-5">
-                          <div className={`flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.3em] px-2 ${theme.textSecondary}`}>
-                            <Keyboard size={14} strokeWidth={2.5} />
+                        <div className="w-full flex flex-col gap-4 sm:gap-5">
+                          <div className={`flex items-center gap-3 text-[9px] sm:text-[11px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] px-2 ${theme.textSecondary}`}>
+                            <Keyboard size={18} strokeWidth={2.5} />
                             <span>Symbolic Entry</span>
                           </div>
                           <div className="relative group">
@@ -474,17 +550,17 @@ export default function App() {
                               onChange={(e) => setInputText(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && handleManualTranslate()}
                               placeholder="Input textual data..."
-                              className={`w-full bg-white/[0.04] border border-white/10 p-6 pr-16 rounded-[2rem] font-medium placeholder:text-slate-500 outline-none focus:ring-1 transition-all backdrop-blur-[40px] shadow-inner text-lg ${theme.id === 'ghost' ? 'text-slate-900 bg-slate-200/50' : 'text-white'}`}
+                              className={`w-full bg-white/[0.04] border border-white/10 p-4 sm:p-6 pr-12 sm:pr-16 rounded-[1.5rem] sm:rounded-[2rem] font-medium placeholder:text-slate-500 outline-none focus:ring-1 transition-all backdrop-blur-[40px] shadow-inner text-sm sm:text-lg ${theme.id === 'ghost' ? 'text-slate-900 bg-slate-200/50' : 'text-white'}`}
                               style={{ ringColor: `${theme.accentColor}80` }}
                             />
                             <motion.button 
                               whileHover={{ scale: 1.1, x: -2 }}
                               whileTap={{ scale: 0.9 }}
                               onClick={handleManualTranslate}
-                              className={`absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-2xl transition-all shadow-lg ${inputText.trim() ? 'text-white shadow-xl' : theme.textSecondary + ' bg-white/5'}`}
+                              className={`absolute right-4 top-1/2 -translate-y-1/2 p-2 sm:p-3 rounded-2xl transition-all shadow-lg ${inputText.trim() ? 'text-white shadow-xl' : theme.textSecondary + ' bg-white/5'}`}
                               style={{ backgroundColor: inputText.trim() ? theme.accentColor : undefined }}
                             >
-                              <Send size={20} strokeWidth={2.5} />
+                              <Send size={18} strokeWidth={2.5} />
                             </motion.button>
                           </div>
                         </div>
@@ -501,50 +577,50 @@ export default function App() {
                     initial={{ opacity: 0, y: 50, filter: 'blur(20px)' }}
                     animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                     exit={{ opacity: 0, y: 50, filter: 'blur(20px)' }}
-                    className={`bg-gradient-to-br ${theme.projectorGradient} p-16 rounded-[5rem] shadow-[0_30px_100px_rgba(0,0,0,0.8)] text-white min-h-[450px] flex flex-col items-center justify-center relative overflow-hidden transition-all group`}
+                    className={`bg-gradient-to-br ${theme.projectorGradient} p-8 sm:p-16 rounded-[3rem] sm:rounded-[5rem] shadow-[0_30px_100px_rgba(0,0,0,0.8)] text-white min-h-[350px] sm:min-h-[450px] flex flex-col items-center justify-center relative overflow-hidden transition-all group`}
                   >
-                    <Globe size={384} className="absolute -top-24 -right-24 opacity-10 rotate-12 transition-transform group-hover:scale-125 group-hover:rotate-[20deg] duration-[2500ms]" />
+                    <Globe size={180} className="absolute -top-12 -right-12 sm:size-[384px] sm:-top-24 sm:-right-24 opacity-10 rotate-12 transition-transform group-hover:scale-125 group-hover:rotate-[20deg] duration-[2500ms]" />
                     
-                    <div className="absolute top-10 left-12 flex items-center gap-4">
+                    <div className="absolute top-6 sm:top-10 left-8 sm:left-12 flex items-center gap-4">
                       <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse shadow-[0_0_20px_white]" />
-                      <span className="text-[12px] font-black text-white/50 uppercase tracking-[0.4em] leading-none">Output Frequency</span>
+                      <span className="text-[10px] sm:text-[12px] font-black text-white/50 uppercase tracking-[0.2em] sm:tracking-[0.4em] leading-none">Output Frequency</span>
                     </div>
 
                     {result && (
                       <div className="w-full space-y-16 relative z-10 text-center">
-                        <div className={`space-y-8 transition-all duration-1000 ${processing ? 'opacity-20 scale-90 blur-xl' : 'opacity-100'}`}>
-                          <p className="text-[13px] font-bold text-white/80 uppercase tracking-[0.5em]">{LANGUAGES.find(l=>l.value===targetLang)?.label}</p>
-                          <p className="text-5xl sm:text-7xl font-bold leading-[1] tracking-tighter drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)]">{result.translation}</p>
+                        <div className={`mt-10 sm:mt-0 px-4 sm:px-8 space-y-4 sm:space-y-8 transition-all duration-1000 ${processing ? 'opacity-20 scale-90 blur-xl' : 'opacity-100'}`}>
+                          <p className="text-[11px] sm:text-[13px] font-bold text-white/60 sm:text-white/80 uppercase tracking-[0.3em] sm:tracking-[0.5em]">{LANGUAGES.find(l=>l.value===targetLang)?.label}</p>
+                          <p className="text-3xl sm:text-7xl font-bold leading-tight sm:leading-[1] tracking-tighter drop-shadow-[0_10px_30px_rgba(0,0,0,0.3)] break-words">{result.translation}</p>
                         </div>
 
-                        <div className="flex justify-center gap-8">
+                        <div className="flex justify-center gap-4 sm:gap-8">
                           <motion.button 
                             whileHover={{ scale: 1.05, backgroundColor: 'rgba(255,255,255,0.2)' }}
                             whileTap={{ scale: 0.9 }}
                             disabled={processing}
                             onClick={handleRetranslate}
-                            className={`w-20 h-20 bg-white/10 text-white rounded-3xl flex items-center justify-center border border-white/20 backdrop-blur-3xl transition-all ${processing ? 'opacity-50' : 'shadow-xl'}`}
+                            className={`w-14 h-14 sm:w-20 h-20 bg-white/10 text-white rounded-2xl sm:rounded-3xl flex items-center justify-center border border-white/20 backdrop-blur-3xl transition-all ${processing ? 'opacity-50' : 'shadow-xl'}`}
                           >
-                            <RefreshCw size={28} strokeWidth={2.5} className={processing ? 'animate-spin' : ''} />
+                            <RefreshCw size={24} strokeWidth={2.5} className={processing ? 'animate-spin' : ''} />
                           </motion.button>
                           <motion.button 
                             whileHover={{ scale: 1.08, boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}
                             whileTap={{ scale: 0.92 }}
                             disabled={processing}
                             onClick={() => speak(result.translation, LANGUAGES.find(l=>l.value===targetLang)?.tts || 'en-US')}
-                            className={`w-32 h-32 bg-white rounded-[3rem] flex items-center justify-center shadow-2xl transition-all ${processing ? 'opacity-50' : 'hover:scale-105 active:scale-95'}`}
+                            className={`w-24 h-24 sm:w-32 h-32 bg-white rounded-[2.5rem] sm:rounded-[3rem] flex items-center justify-center shadow-2xl transition-all ${processing ? 'opacity-50' : 'hover:scale-105 active:scale-95'}`}
                             style={{ color: theme.accentColor }}
                           >
-                            <Volume2 size={48} strokeWidth={2.5} />
+                            <Volume2 size={40} strokeWidth={2.5} />
                           </motion.button>
                           <motion.button 
                             whileHover={{ scale: 1.05, backgroundColor: 'rgba(0,0,0,0.4)' }}
                             whileTap={{ scale: 0.9 }}
                             disabled={processing}
                             onClick={() => copyToClipboard(result.translation)}
-                            className={`w-20 h-20 bg-black/30 text-white rounded-3xl flex items-center justify-center backdrop-blur-3xl transition-all border border-white/5 ${processing ? 'opacity-50' : 'shadow-xl'}`}
+                            className={`w-14 h-14 sm:w-20 h-20 bg-black/30 text-white rounded-2xl sm:rounded-3xl flex items-center justify-center backdrop-blur-3xl transition-all border border-white/5 ${processing ? 'opacity-50' : 'shadow-xl'}`}
                           >
-                            <Copy size={28} strokeWidth={2.5} />
+                            <Copy size={24} strokeWidth={2.5} />
                           </motion.button>
                         </div>
 
@@ -571,7 +647,7 @@ export default function App() {
           >
             <div className="flex justify-between items-end px-10">
               <div>
-                <h2 className={`text-5xl font-bold uppercase tracking-[-0.08em] italic leading-none ${theme.textColor}`}>Buffer Log</h2>
+                <h2 className={`text-5xl font-bold uppercase tracking-[-0.08em] italic leading-none ${theme.textColor}`}>History Log</h2>
                 <div className="flex items-center gap-3 mt-3">
                   <div className="w-2 h-2 rounded-full animate-ping" style={{ backgroundColor: theme.accentColor }} />
                   <p className={`${theme.textSecondary} text-[11px] font-black uppercase tracking-[0.3em]`}>Synchronized session history</p>
@@ -581,7 +657,7 @@ export default function App() {
                 onClick={() => setHistory([])} 
                 className="px-6 py-2.5 rounded-2xl bg-red-600/10 border border-red-600/20 text-red-500 text-[11px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-lg hover:shadow-red-600/20"
               >
-                Flush buffer
+                Flush History
               </button>
             </div>
             
@@ -606,7 +682,7 @@ export default function App() {
                     <div className="flex justify-between items-start mb-8 relative z-10">
                       <div className="flex items-center gap-3">
                         <span className="text-[11px] font-black text-white px-4 py-1.5 rounded-full uppercase tracking-tighter shadow-lg" style={{ backgroundColor: theme.accentColor }}>{item.identifiedLanguage}</span>
-                        <ArrowRight size={14} strokeWidth={3} className={theme.textSecondary} />
+                        <ArrowRight size={16} strokeWidth={3} className={theme.textSecondary} />
                         <span className="text-[11px] font-black bg-white/10 px-4 py-1.5 rounded-full uppercase tracking-tighter border border-white/5" style={{ color: theme.textColor }}>{item.targetLang}</span>
                       </div>
                       <span className={`text-[11px] font-black uppercase tracking-tighter pt-1.5 ${theme.textSecondary}`}>{new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
@@ -623,13 +699,13 @@ export default function App() {
                         className={`flex-1 py-4 text-white rounded-[1.5rem] shadow-xl transition-all flex items-center justify-center gap-3 text-[11px] font-black uppercase tracking-[0.2em]`}
                         style={{ backgroundColor: theme.accentColor }}
                       >
-                        <Volume2 size={16} strokeWidth={2.5} /> Play Audio
+                        <Volume2 size={18} strokeWidth={2.5} /> Play Audio
                       </motion.button>
                       <button 
                         onClick={() => copyToClipboard(item.translation)}
                         className={`p-4 bg-white/5 rounded-[1.5rem] hover:bg-white/10 transition-all border border-white/5 hover:border-white/10 ${theme.textSecondary}`}
                       >
-                        <Copy size={18} strokeWidth={2.5} />
+                        <Copy size={20} strokeWidth={2.5} />
                       </button>
                     </div>
                   </motion.div>
@@ -641,23 +717,23 @@ export default function App() {
       </main>
 
       {/* Cyber-Navigation System */}
-      <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-[80px] border border-white/10 rounded-[3rem] flex items-center px-4 py-2.5 gap-2 z-50 shadow-[0_30px_100px_rgba(0,0,0,0.9)] scale-110 sm:scale-100">
+      <div className="fixed bottom-10 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-[80px] border border-white/10 rounded-[3rem] flex items-center px-4 py-2 gap-1.5 z-50 shadow-[0_30px_100px_rgba(0,0,0,0.9)] scale-100 sm:scale-100">
         <button 
           onClick={() => setActiveTab('translate')}
-          className={`flex items-center gap-3 px-8 py-3.5 rounded-[2rem] transition-all group ${activeTab === 'translate' ? 'text-white shadow-2xl shadow-orange-500/20' : 'text-white/40 hover:text-white'}`}
+          className={`flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 rounded-[2rem] transition-all group ${activeTab === 'translate' ? 'text-white shadow-2xl shadow-orange-500/20' : 'text-white/40 hover:text-white'}`}
           style={{ background: activeTab === 'translate' ? `linear-gradient(to right, ${theme.accentColor}, ${theme.secondaryAccent})` : undefined }}
         >
           <Languages size={20} strokeWidth={activeTab === 'translate' ? 3 : 2} className={activeTab === 'translate' ? 'rotate-0' : 'group-hover:rotate-12 transition-transform'} />
-          <span className="text-[12px] font-black uppercase tracking-[0.25em]">Process</span>
+          <span className="text-[10px] sm:text-[12px] font-black uppercase tracking-[0.25em]">Process</span>
         </button>
         <div className="w-[1px] h-6 bg-white/10" />
         <button 
           onClick={() => setActiveTab('history')}
-          className={`flex items-center gap-3 px-8 py-3.5 rounded-[2rem] transition-all group ${activeTab === 'history' ? 'text-white shadow-2xl shadow-orange-500/20' : 'text-white/40 hover:text-white'}`}
+          className={`flex items-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 rounded-[2rem] transition-all group ${activeTab === 'history' ? 'text-white shadow-2xl shadow-orange-500/20' : 'text-white/40 hover:text-white'}`}
           style={{ background: activeTab === 'history' ? `linear-gradient(to right, ${theme.accentColor}, ${theme.secondaryAccent})` : undefined }}
         >
           <History size={20} strokeWidth={activeTab === 'history' ? 3 : 2} className={activeTab === 'history' ? 'rotate-0' : 'group-hover:scale-110 transition-transform'} />
-          <span className="text-[12px] font-black uppercase tracking-[0.25em]">Buffer</span>
+          <span className="text-[10px] sm:text-[12px] font-black uppercase tracking-[0.25em]">History</span>
         </button>
       </div>
 
@@ -683,13 +759,13 @@ export default function App() {
                 </div>
                 <button 
                   onClick={() => setShowThemeHub(false)}
-                  className="p-4 rounded-full bg-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all border border-white/5"
+                  className="p-3 sm:p-4 rounded-full bg-white/5 text-white/40 hover:text-white hover:bg-white/10 transition-all border border-white/5"
                 >
                   <RefreshCw size={24} className="rotate-45" />
                 </button>
               </div>
 
-              <div className="p-12 grid grid-cols-1 sm:grid-cols-2 gap-8">
+              <div className="p-12 grid grid-cols-1 sm:grid-cols-2 gap-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
                 {THEMES.map((t) => (
                   <motion.button
                     key={t.id}
